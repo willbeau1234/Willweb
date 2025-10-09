@@ -1,0 +1,12 @@
+# Ignore large model files
+*.gguf
+*.bin
+*.safetensors
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Modal cache
+.modal_cache/

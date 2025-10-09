@@ -3,6 +3,7 @@ import { HeroSection } from "@/components/hero-section"
 import { ProjectsSection } from "@/components/projects-section"
 import { ResearchSection } from "@/components/research-section"
 import { BlogSection } from "@/components/blog-section"
+import { ResumeSection } from "@/components/resume-section"
 import { AISolutionsSection } from "@/components/ai-solutions-section"
 import { ContactSection } from "@/components/contact-section"
 import { SpaceBackground } from "@/components/space-background"
@@ -14,6 +15,7 @@ export default function Home() {
       <Navigation />
       <main>
         <HeroSection />
+        <ResumeSection />
         <ProjectsSection />
         <ResearchSection />
         <BlogSection />

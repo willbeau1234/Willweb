@@ -66,6 +66,12 @@ export function Navigation() {
               Blog
             </button>
             <button
+              onClick={() => scrollToSection("resume")}
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Resume
+            </button>
+            <button
               onClick={() => scrollToSection("ai-solutions")}
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >

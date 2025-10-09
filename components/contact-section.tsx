@@ -53,8 +53,8 @@ export function ContactSection() {
     <section id="contact" className="py-24 px-6">
       <div className="container mx-auto max-w-5xl">
         <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-bold mb-4">Get in Touch</h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <h2 className="text-4xl md:text-5xl font-bold mb-4 text-blue-400">Get in Touch</h2>
+          <p className="text-lg text-blue-400 max-w-2xl mx-auto">
             Have a project in mind? Let's discuss how we can work together to bring your AI vision to life.
           </p>
         </div>

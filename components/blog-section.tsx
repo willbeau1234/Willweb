@@ -20,10 +20,10 @@ export function BlogSection() {
       <div className="container mx-auto max-w-7xl">
         <div className="text-center mb-12">
           <div className="flex items-center justify-center gap-2 mb-4">
-            <BookOpen className="w-8 h-8 text-primary" />
-            <h2 className="text-4xl md:text-5xl font-bold">Stories & Thoughts</h2>
+            <BookOpen className="w-8 h-8 text-blue-400" />
+            <h2 className="text-4xl md:text-5xl font-bold text-blue-400">Stories & Thoughts</h2>
           </div>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-lg text-blue-400 max-w-2xl mx-auto">
             Personal reflections, interesting stories, and thoughts beyond the code
           </p>
         </div>

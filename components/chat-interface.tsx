@@ -24,7 +24,7 @@ export function ChatInterface() {
       id: "1",
       role: "assistant",
       content:
-        "Hi! I'm Will's AI assistant. Ask me anything about his work, expertise, or how AI can help your business.",
+        "Hi! I'm Will's AI assistant. Ask me anything about his work, expertise, or how AI can help your business. Please note that responses may not always be accurate.",
     },
   ])
   const [input, setInput] = useState("")
@@ -94,7 +94,7 @@ export function ChatInterface() {
             <div key={message.id} className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}>
               <div
                 className={`max-w-[80%] rounded-2xl px-4 py-3 ${
-                  message.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+                  message.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted text-foreground"
                 }`}
               >
                 {message.role === "assistant" && <Sparkles className="inline-block w-4 h-4 mr-2 mb-1" />}
@@ -131,12 +131,15 @@ export function ChatInterface() {
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSend()}
               placeholder="Ask me anything..."
-              className="flex-1 px-4 py-3 rounded-xl bg-secondary text-secondary-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              className="flex-1 px-4 py-3 rounded-xl bg-secondary text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             />
             <Button onClick={handleSend} size="icon" className="rounded-xl h-12 w-12">
               <Send className="h-5 w-5" />
             </Button>
           </div>
+          <p className="text-xs text-muted-foreground mt-2 text-center">
+            AI responses may not always be accurate. Please verify important information.
+          </p>
         </div>
       </div>
     </Card>

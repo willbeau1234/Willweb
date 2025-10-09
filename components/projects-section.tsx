@@ -40,8 +40,8 @@ export function ProjectsSection() {
     <section id="projects" className="py-24 px-6 bg-muted/30">
       <div className="container mx-auto max-w-7xl">
         <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-bold mb-4">Featured Projects</h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <h2 className="text-4xl md:text-5xl font-bold mb-4 text-blue-400">Featured Projects</h2>
+          <p className="text-lg text-blue-400 max-w-2xl mx-auto">
             A selection of AI-powered solutions I've built for clients across various industries
           </p>
         </div>

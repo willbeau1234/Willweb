@@ -49,8 +49,8 @@ export function AISolutionsSection() {
     <section id="ai-solutions" className="py-24 px-6 bg-muted/30">
       <div className="container mx-auto max-w-7xl">
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold mb-4">AI Solutions</h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
+          <h2 className="text-4xl md:text-5xl font-bold mb-4 text-blue-400">AI Solutions</h2>
+          <p className="text-lg text-blue-400 max-w-2xl mx-auto mb-8">
             Empowering businesses with cutting-edge AI technology that drives growth, efficiency, and innovation
           </p>
           <Button size="lg" onClick={scrollToContact} className="rounded-full">

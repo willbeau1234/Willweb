@@ -58,11 +58,24 @@
 
         @media (max-width: 768px) {
             body {
-                padding: 1rem;
+                padding: 1rem 0.5rem;
+                min-height: auto;
             }
 
             .pdf-container {
-                height: 80vh;
+                height: auto;
+                min-height: 100vh;
+                border-radius: 8px;
+            }
+
+            .pdf-embed {
+                min-height: 150vh;
+            }
+
+            .back-link {
+                margin-bottom: 1rem;
+                padding: 0.6rem 1.2rem;
+                font-size: 0.9rem;
             }
         }
     </style>

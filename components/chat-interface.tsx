@@ -49,7 +49,10 @@ export function ChatInterface() {
     const cachedResponse = findCachedResponse(userInput)
 
     if (cachedResponse) {
-      // Instant response from cache
+      // Add slight delay to mimic LLM response (300-600ms)
+      const delay = 300 + Math.random() * 300
+      await new Promise(resolve => setTimeout(resolve, delay))
+
       setMessages((prev) => [
         ...prev,
         {

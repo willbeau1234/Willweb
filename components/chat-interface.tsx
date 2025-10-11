@@ -3,19 +3,21 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { Send, Sparkles } from "lucide-react"
+import { Send, Sparkles, Zap } from "lucide-react"
+import { findCachedResponse } from "@/lib/cached-prompts"
 
 interface Message {
   id: string
   role: "user" | "assistant"
   content: string
+  cached?: boolean // Track if response came from cache
 }
 
 const exampleQuestions = [
-  "What AI solutions do you offer?",
-  "Tell me about your recent projects",
-  "How can AI help my business?",
-  "What's your development process?",
+  "Should I hire Will?",
+  "What makes Will different?",
+  "What are Will's core technical skills?",
+  "When is Will available?",
 ]
 
 export function ChatInterface() {
@@ -32,16 +34,35 @@ export function ChatInterface() {
   const handleSend = async () => {
     if (!input.trim()) return
 
+    const userInput = input
     const newMessage: Message = {
       id: Date.now().toString(),
       role: "user",
-      content: input,
+      content: userInput,
     }
 
     const updatedMessages = [...messages, newMessage]
     setMessages(updatedMessages)
     setInput("")
 
+    // Check cache first
+    const cachedResponse = findCachedResponse(userInput)
+
+    if (cachedResponse) {
+      // Instant response from cache
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: (Date.now() + 1).toString(),
+          role: "assistant",
+          content: cachedResponse,
+          cached: true,
+        },
+      ])
+      return
+    }
+
+    // Fall back to LLM if no cache hit
     try {
       const response = await fetch('/api/chat', {
         method: 'POST',
@@ -49,7 +70,7 @@ export function ChatInterface() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          message: input,
+          message: userInput,
           history: updatedMessages
         }),
       })
@@ -59,13 +80,14 @@ export function ChatInterface() {
       }
 
       const data = await response.json()
-      
+
       setMessages((prev) => [
         ...prev,
         {
           id: (Date.now() + 1).toString(),
           role: "assistant",
           content: data.response || "Sorry, I couldn't generate a response.",
+          cached: false,
         },
       ])
     } catch (error) {
@@ -76,6 +98,7 @@ export function ChatInterface() {
           id: (Date.now() + 1).toString(),
           role: "assistant",
           content: "Sorry, there was an error processing your request.",
+          cached: false,
         },
       ])
     }
@@ -97,7 +120,13 @@ export function ChatInterface() {
                   message.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted text-foreground"
                 }`}
               >
-                {message.role === "assistant" && <Sparkles className="inline-block w-4 h-4 mr-2 mb-1" />}
+                {message.role === "assistant" && (
+                  message.cached ? (
+                    <Zap className="inline-block w-4 h-4 mr-2 mb-1 text-yellow-500" title="Instant cached response" />
+                  ) : (
+                    <Sparkles className="inline-block w-4 h-4 mr-2 mb-1" />
+                  )
+                )}
                 <span className="text-sm leading-relaxed">{message.content}</span>
               </div>
             </div>

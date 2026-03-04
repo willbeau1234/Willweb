@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 
 export const maxDuration = 60 // Set timeout to 60 seconds for Vercel
 
@@ -7,7 +7,10 @@ export async function POST(request: NextRequest) {
     const { message, history } = await request.json()
 
     if (!message) {
-      return NextResponse.json({ error: 'Message is required' }, { status: 400 })
+      return new Response(JSON.stringify({ error: 'Message is required' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      })
     }
 
     // Modal endpoint URL
@@ -37,16 +40,39 @@ export async function POST(request: NextRequest) {
     const data = await response.json()
     console.log('Modal response data:', data)
 
-    return NextResponse.json({
-      response: data.response
+    const responseText = data.response || ''
+
+    // Stream the response word by word for better UX
+    const encoder = new TextEncoder()
+    const stream = new ReadableStream({
+      async start(controller) {
+        const words = responseText.split(' ')
+        for (let i = 0; i < words.length; i++) {
+          const word = words[i]
+          const chunk = i === 0 ? word : ' ' + word
+          controller.enqueue(encoder.encode(chunk))
+          // Small delay between words for natural feel
+          await new Promise(resolve => setTimeout(resolve, 30))
+        }
+        controller.close()
+      },
+    })
+
+    return new Response(stream, {
+      headers: {
+        'Content-Type': 'text/plain; charset=utf-8',
+        'Transfer-Encoding': 'chunked',
+      },
     })
 
   } catch (error) {
     console.error('Chat API error:', error)
 
-    // Return more helpful error message
-    return NextResponse.json({
-      response: `Error: ${error instanceof Error ? error.message : 'Unknown error'}. The model may be starting up (first request takes ~15 seconds).`
+    // Return error as streamed response for consistency
+    const errorMessage = `Error: ${error instanceof Error ? error.message : 'Unknown error'}. The model may be starting up (first request takes ~15 seconds).`
+
+    return new Response(errorMessage, {
+      headers: { 'Content-Type': 'text/plain; charset=utf-8' },
     })
   }
 }

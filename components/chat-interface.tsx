@@ -66,6 +66,18 @@ export function ChatInterface() {
     }
 
     // Fall back to LLM if no cache hit
+    // Add placeholder message for streaming
+    const assistantMessageId = (Date.now() + 1).toString()
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: assistantMessageId,
+        role: "assistant",
+        content: "",
+        cached: false,
+      },
+    ])
+
     try {
       const response = await fetch('/api/chat', {
         method: 'POST',
@@ -82,28 +94,52 @@ export function ChatInterface() {
         throw new Error('Failed to get response')
       }
 
-      const data = await response.json()
+      // Handle streaming response
+      const reader = response.body?.getReader()
+      const decoder = new TextDecoder()
 
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: (Date.now() + 1).toString(),
-          role: "assistant",
-          content: data.response || "Sorry, I couldn't generate a response.",
-          cached: false,
-        },
-      ])
+      if (!reader) {
+        throw new Error('No response body')
+      }
+
+      let fullContent = ''
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+
+        const chunk = decoder.decode(value, { stream: true })
+        fullContent += chunk
+
+        // Update message with streamed content
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === assistantMessageId
+              ? { ...msg, content: fullContent }
+              : msg
+          )
+        )
+      }
+
+      // Final update to ensure complete message
+      if (!fullContent) {
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === assistantMessageId
+              ? { ...msg, content: "Sorry, I couldn't generate a response." }
+              : msg
+          )
+        )
+      }
     } catch (error) {
       console.error('Error:', error)
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: (Date.now() + 1).toString(),
-          role: "assistant",
-          content: "Sorry, there was an error processing your request.",
-          cached: false,
-        },
-      ])
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === assistantMessageId
+            ? { ...msg, content: "Sorry, there was an error processing your request." }
+            : msg
+        )
+      )
     }
   }
 
@@ -125,7 +161,7 @@ export function ChatInterface() {
               >
                 {message.role === "assistant" && (
                   message.cached ? (
-                    <Zap className="inline-block w-4 h-4 mr-2 mb-1 text-yellow-500" title="Instant cached response" />
+                    <Zap className="inline-block w-4 h-4 mr-2 mb-1 text-yellow-500" />
                   ) : (
                     <Sparkles className="inline-block w-4 h-4 mr-2 mb-1" />
                   )

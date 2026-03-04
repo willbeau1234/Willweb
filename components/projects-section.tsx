@@ -26,9 +26,19 @@ const projects = [
     category: "AI Solutions",
     link: "https://www.thedemocracydaily.com/",
   },
+  {
+    id: 3,
+    title: "Vet2Go",
+    description:
+      "Full-stack web application for a veterinary startup in Madrid, Spain. Built front-end and back-end systems that improved UI interaction and data collection, enabling the company to achieve record profits. Developed while working internationally and communicating in Spanish.",
+    image: "/Vet2Go.png",
+    tags: ["Full-Stack", "React", "Node.js", "Spanish"],
+    category: "Startup Solutions",
+    link: "https://vet2go.es/",
+  },
 ]
 
-const categories = ["All", "Enterprise Solutions", "AI Solutions"]
+const categories = ["All", "Enterprise Solutions", "AI Solutions", "Startup Solutions"]
 
 export function ProjectsSection() {
   const [selectedCategory, setSelectedCategory] = useState("All")

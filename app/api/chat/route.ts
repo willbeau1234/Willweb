@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Modal endpoint URL
-    const MODAL_ENDPOINT = process.env.MODAL_ENDPOINT || 'https://beaum045--unsloth-model-fastapi-app.modal.run'
+    const MODAL_ENDPOINT = process.env.MODAL_ENDPOINT || 'https://beaum045--unsloth-model-model-serve.modal.run'
 
     console.log('Calling Modal endpoint:', MODAL_ENDPOINT)
     console.log('Message:', message)

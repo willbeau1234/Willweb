@@ -13,21 +13,8 @@ image = Image.debian_slim().pip_install([
     "pydantic"
 ])
 
-@app.function(
-    image=image,
-    gpu="A10G",  # Use A10G GPU for good performance
-    timeout=300,
-    scaledown_window=120,
-    volumes={"/model": volume}
-)
-@modal.asgi_app()
-def fastapi_app():
-    from fastapi import FastAPI, Request
-
-    web_app = FastAPI()
-
-    # System prompt with Will's background info
-    SYSTEM_PROMPT = """You are Will Beaumaster's AI assistant on his portfolio website. Answer questions about Will accurately and professionally.
+# System prompt with Will's background info
+SYSTEM_PROMPT = """You are Will Beaumaster's AI assistant on his portfolio website. Answer questions about Will accurately and professionally.
 
 KEY FACTS ABOUT WILL:
 - Senior at University of Minnesota graduating May 2026
@@ -65,42 +52,56 @@ GUIDELINES:
 - Highlight Will's unique combination of technical AI skills, business impact, and leadership experience
 - Keep responses focused and relevant to the question"""
 
-    @web_app.post("/")
-    async def generate_endpoint(request: Request):
-        """Main generation endpoint"""
+@app.cls(
+    image=image,
+    gpu="A10G",
+    timeout=300,
+    scaledown_window=120,
+    volumes={"/model": volume}
+)
+class Model:
+    @modal.enter()
+    def load_model(self):
+        """Load model once when container starts"""
         from llama_cpp import Llama
-
-        # Parse request
-        body = await request.json()
-        message = body.get("message", "")
-
-        # Load your model (will be cached after first load)
-        llm = Llama(
+        self.llm = Llama(
             model_path="/model/unsloth.Q4_K_M.gguf",
-            temperature=0.7,
-            top_p=0.9,
             n_ctx=2048,
             verbose=False
         )
 
-        # Format prompt with system context
-        prompt = f"<|system|>\n{SYSTEM_PROMPT}<|user|>\n{message}<|assistant|>\n"
+    @modal.asgi_app()
+    def serve(self):
+        from fastapi import FastAPI, Request
 
-        response = llm(
-            prompt,
-            max_tokens=512,
-            stop=["<|end_of_text|>", "<|user|>"],
-            echo=False
-        )
+        web_app = FastAPI()
+        llm = self.llm  # Capture reference for use in endpoint
 
-        return {"response": response['choices'][0]['text'].strip()}
+        @web_app.post("/")
+        async def generate_endpoint(request: Request):
+            """Main generation endpoint"""
+            body = await request.json()
+            message = body.get("message", "")
 
-    @web_app.get("/health")
-    async def health():
-        """Health check endpoint"""
-        return {"status": "healthy"}
+            prompt = f"<|system|>\n{SYSTEM_PROMPT}<|user|>\n{message}<|assistant|>\n"
 
-    return web_app
+            response = llm(
+                prompt,
+                max_tokens=512,
+                temperature=0.7,
+                top_p=0.9,
+                stop=["<|end_of_text|>", "<|user|>"],
+                echo=False
+            )
+
+            return {"response": response['choices'][0]['text'].strip()}
+
+        @web_app.get("/health")
+        async def health():
+            """Health check endpoint"""
+            return {"status": "healthy"}
+
+        return web_app
 
 # Upload model to volume (run this once)
 @app.function(image=image, volumes={"/model": volume})

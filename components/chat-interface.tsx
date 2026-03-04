@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Send, Sparkles, Zap } from "lucide-react"
@@ -30,6 +30,18 @@ export function ChatInterface() {
     },
   ])
   const [input, setInput] = useState("")
+  const hasWarmedUp = useRef(false)
+
+  // Warm up the LLM in the background when component mounts
+  useEffect(() => {
+    if (hasWarmedUp.current) return
+    hasWarmedUp.current = true
+
+    // Fire and forget - don't wait for response
+    fetch('/api/warmup', { method: 'POST' }).catch(() => {
+      // Ignore errors - warmup is best effort
+    })
+  }, [])
 
   const handleSend = async () => {
     if (!input.trim()) return

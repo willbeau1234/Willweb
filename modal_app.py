@@ -6,12 +6,11 @@ app = App("unsloth-model")
 # Create volume to store the model
 volume = Volume.from_name("model-volume", create_if_missing=True)
 
-# Create image with required dependencies
-image = Image.debian_slim().pip_install([
-    "llama-cpp-python",
-    "fastapi",
-    "pydantic"
-])
+# Create image with required dependencies - CPU-only for faster cold start
+image = (
+    Image.debian_slim()
+    .pip_install("llama-cpp-python", "fastapi", "pydantic")
+)
 
 # System prompt with Will's background info
 SYSTEM_PROMPT = """You are Will Beaumaster's AI assistant on his portfolio website. Answer questions about Will accurately and professionally.
@@ -54,9 +53,10 @@ GUIDELINES:
 
 @app.cls(
     image=image,
-    gpu="A10G",
+    cpu=4,  # More CPU cores for faster inference
+    memory=4096,  # 4GB RAM
     timeout=300,
-    scaledown_window=120,
+    scaledown_window=300,  # Keep container warm for 5 minutes
     volumes={"/model": volume}
 )
 class Model:
@@ -65,8 +65,9 @@ class Model:
         """Load model once when container starts"""
         from llama_cpp import Llama
         self.llm = Llama(
-            model_path="/model/unsloth.Q4_K_M.gguf",
-            n_ctx=2048,
+            model_path="/model/qwen2.5-0.5b-instruct-q4_k_m.gguf",
+            n_ctx=512,  # Smaller context for speed
+            n_threads=4,  # Use all CPU cores
             verbose=False
         )
 
@@ -83,14 +84,15 @@ class Model:
             body = await request.json()
             message = body.get("message", "")
 
-            prompt = f"<|system|>\n{SYSTEM_PROMPT}<|user|>\n{message}<|assistant|>\n"
+            # Qwen2.5 chat format
+            prompt = f"<|im_start|>system\n{SYSTEM_PROMPT}<|im_end|>\n<|im_start|>user\n{message}<|im_end|>\n<|im_start|>assistant\n"
 
             response = llm(
                 prompt,
-                max_tokens=512,
+                max_tokens=128,  # Shorter responses for speed
                 temperature=0.7,
                 top_p=0.9,
-                stop=["<|end_of_text|>", "<|user|>"],
+                stop=["<|im_end|>", "<|im_start|>"],
                 echo=False
             )
 

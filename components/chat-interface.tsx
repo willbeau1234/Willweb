@@ -78,14 +78,14 @@ export function ChatInterface() {
     }
 
     // Fall back to LLM if no cache hit
-    // Add placeholder message for streaming
+    // Add placeholder message with loading indicator
     const assistantMessageId = (Date.now() + 1).toString()
     setMessages((prev) => [
       ...prev,
       {
         id: assistantMessageId,
         role: "assistant",
-        content: "",
+        content: "Thinking... (This may take up to 2 minutes on first use while the AI model warms up)",
         cached: false,
       },
     ])
@@ -148,7 +148,7 @@ export function ChatInterface() {
       setMessages((prev) =>
         prev.map((msg) =>
           msg.id === assistantMessageId
-            ? { ...msg, content: "Sorry, there was an error processing your request." }
+            ? { ...msg, content: "The AI model is still warming up. Please try again in a minute, or ask one of the suggested questions for an instant response!" }
             : msg
         )
       )

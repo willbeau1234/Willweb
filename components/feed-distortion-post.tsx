@@ -63,7 +63,16 @@ export function FeedDistortionPost() {
       {/* How it works */}
       <section className="py-12 px-6 bg-stone-100 border-t border-stone-200">
         <div className="container mx-auto max-w-2xl">
-          <h2 className="text-xl font-medium text-stone-800 mb-6">How it works</h2>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-medium text-stone-800">How it works</h2>
+            <a
+              href="/feed-distortion-methodology.tex"
+              download
+              className="text-sm text-stone-500 hover:text-stone-800 transition-colors underline"
+            >
+              Download the full methodology (LaTeX)
+            </a>
+          </div>
 
           <div className="space-y-4 text-stone-600 leading-relaxed">
             <p>
@@ -79,9 +88,9 @@ export function FeedDistortionPost() {
             </p>
             <p>
               <strong className="text-stone-700">The final number.</strong> Your distortion score
-              combines all of this. Higher means your feed is more heavily weighted toward
-              engagement-bait. Lower means it's more neutral. Neither is necessarily good or bad—it's
-              just data about what's capturing your attention.
+              combines all of this using a version of the peak-end rule from psychology—the idea
+              that we remember experiences by their most intense moment and how they ended.
+              Higher score means your feed is more weighted toward engagement-bait.
             </p>
           </div>
         </div>
@@ -112,10 +121,17 @@ export function FeedDistortionPost() {
         </div>
       </section>
 
-      {/* Footer */}
+      {/* Privacy & Footer */}
       <footer className="py-8 px-6 border-t border-stone-200">
-        <div className="container mx-auto max-w-2xl text-center">
-          <p className="text-sm text-stone-500">
+        <div className="container mx-auto max-w-2xl">
+          <div className="bg-stone-100 rounded-lg p-4 mb-6">
+            <p className="text-sm text-stone-600">
+              <strong className="text-stone-700">Privacy:</strong> I don't collect your data.
+              Your video is processed and deleted immediately. I don't store your recordings,
+              I don't look at what you scroll through, and I have no interest in keeping any of it.
+            </p>
+          </div>
+          <p className="text-sm text-stone-500 text-center">
             Built by Will Beaumaster · 2026
           </p>
         </div>

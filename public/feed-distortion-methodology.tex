@@ -1,0 +1,138 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1.2in]{geometry}
+\usepackage{amsmath, amssymb}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{booktabs}
+
+\title{Feed Distortion Index: The Math Behind It}
+\author{Will Beaumaster}
+\date{June 2026}
+
+\begin{document}
+
+\maketitle
+
+\section*{What This Is}
+
+I built a tool that watches you scroll Instagram (or TikTok, or whatever) and tells you what you actually stop to look at. Not what you think you look at—what actually catches your attention. This document explains how it works under the hood.
+
+Fair warning: this is a toy, not science. All the thresholds are rough guesses. The scoring dimensions come from psychology research on social media effects, but I'm not claiming any of this is rigorous. I built it because I was curious, and I thought other people might be too.
+
+I could be wrong about what any of this means. But here's how it works.
+
+\section{Detecting Pauses}
+
+The first step is figuring out when you stopped scrolling. This is harder than it sounds because videos autoplay—you can't just look for frames that don't change.
+
+I use \textbf{phase correlation}, which tracks the actual movement between frames. When the scroll stops for more than half a second, that's a pause—you stopped to look at something.
+
+Technically, for each pair of consecutive frames $F_t$ and $F_{t+1}$, I compute:
+\[
+(dx, dy), r = \text{phaseCorrelate}(F_t, F_{t+1})
+\]
+where $dy$ is the vertical shift and $r$ is the correlation peak. If $|dy| > 3$ pixels, you're scrolling. Otherwise, you're dwelling.
+
+The tool samples at 5 fps (every 6th frame at 30fps video) to keep things fast without missing short pauses.
+
+\section{Scoring Each Post}
+
+Every post you pause on gets sent to a vision model (Claude Haiku) and scored on five dimensions. These come from psychology research on what makes social media content psychologically ``sticky'':
+
+\begin{itemize}
+    \item \textbf{Appearance} (0--1): Focus on beauty, fashion, body image
+    \item \textbf{Idealization} (0--1): How polished vs. raw the content looks
+    \item \textbf{Arousal} (0--1): Emotional intensity
+    \item \textbf{Negativity} (0--1): Negative emotional tone
+    \item \textbf{Aspiration} (0--1): Luxury, success, lifestyle envy stuff
+\end{itemize}
+
+Each post gets a score for all five. Nothing special here—just asking a vision model to rate things.
+
+\section{Computing Per-Post Intensity}
+
+Each post's overall ``intensity'' is a weighted power mean of its dimension scores. The idea is that a post that's high on multiple dimensions is more intense than one that's high on just one.
+
+For post $i$ with dimension scores $s_{i,d}$:
+\[
+I_i = \left( \sum_{d} w_d \cdot s_{i,d}^p \right)^{1/p}
+\]
+
+where $w_d$ are the dimension weights (appearance gets 0.30, idealization 0.25, arousal 0.20, negativity 0.15, aspiration 0.10) and $p = 2$ is the power mean exponent. Higher $p$ means posts that are high on multiple dimensions get even higher scores.
+
+\section{Attention Weighting}
+
+Not all pauses are equal. A 5-second stare means more than a half-second glance. I weight each post by how much attention you gave it:
+
+\[
+\omega_i = \log\left(1 + \frac{t_i}{\tau}\right) \cdot (1 + \gamma \cdot a_i) \cdot (1 + \delta \cdot v_i)
+\]
+
+where:
+\begin{itemize}
+    \item $t_i$ is dwell time in seconds
+    \item $\tau = 1.5$ is a scaling factor (diminishing returns on long stares)
+    \item $a_i$ is the arousal score (high-arousal content gets a boost because it's designed to capture attention)
+    \item $\gamma = 1.0$ is the arousal boost multiplier
+    \item $v_i$ is 1 if the content was video/animation, 0 otherwise
+    \item $\delta = 0.3$ is the video boost multiplier
+\end{itemize}
+
+The weights get normalized so they sum to 1.
+
+\section{The Final Score: Peak-End}
+
+Here's where it gets interesting. I don't just take the average of all the posts you looked at. I use a version of the \textbf{peak-end rule} from psychology—the idea that we remember experiences primarily by their most intense moment (peak) and how they ended.
+
+The overall distortion score is:
+\[
+\text{Score} = 100 \cdot \left( \alpha \cdot \bar{D} + \beta \cdot D_{\max} + (1 - \alpha - \beta) \cdot D_{\text{end}} \right)
+\]
+
+where:
+\begin{itemize}
+    \item $\bar{D} = \sum_i \tilde{\omega}_i \cdot I_i$ is the attention-weighted mean intensity
+    \item $D_{\max} = \max_i I_i$ is the peak intensity
+    \item $D_{\text{end}}$ is the mean intensity of the last 3 posts
+    \item $\alpha = 0.5$, $\beta = 0.3$ (so ending gets 20\% weight)
+\end{itemize}
+
+This means your score isn't just about what you saw on average—it's also about the most intense thing you saw and how your session ended.
+
+\section{The Gap: Served vs. Stopped}
+
+This is the part I find most interesting. For each dimension, I compute:
+\begin{itemize}
+    \item \textbf{Served}: The unweighted average score across all posts you paused on. This is what the algorithm showed you.
+    \item \textbf{Stopped on}: The attention-weighted average. This is what actually captured your attention.
+\end{itemize}
+
+The gap between these tells you something about your engagement patterns. If your ``stopped on'' appearance score is higher than ``served,'' you're dwelling more on appearance-focused content than average. That's not necessarily bad—it's just data.
+
+\section{Why These Numbers?}
+
+All the specific values (weights, thresholds, exponents) are tasteful guesses. I tuned them on my own scroll recordings until the output felt reasonable. They're not calibrated on any dataset, and I make no claims about their validity.
+
+If you want to mess with them, all the constants are in \texttt{config.py}. The whole thing is open source.
+
+\section{What This Doesn't Tell You}
+
+A few things I want to be explicit about:
+\begin{itemize}
+    \item This doesn't measure whether social media is ``good'' or ``bad'' for you
+    \item It doesn't account for context (maybe you paused on that fitness post because you found it annoying)
+    \item It's based on a single scroll session, which might not be representative
+    \item The dimension scores from the vision model are approximations, not ground truth
+\end{itemize}
+
+This is a curiosity tool. Treat it that way.
+
+\section*{Data Privacy}
+
+Your video is processed on the server and deleted immediately after. I don't store your recordings, I don't look at what you scroll through, and I have no interest in your data. The tool runs, gives you results, and forgets you existed.
+
+\section*{Contact}
+
+If you have thoughts about this—whether you think I'm onto something or totally wrong—I'd actually like to hear it. That's part of why I built this: to see what other people think.
+
+\end{document}

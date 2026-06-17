@@ -5,62 +5,55 @@ export function FeedDistortionPost() {
 
   return (
     <div className="min-h-screen bg-stone-50">
-      {/* Decorative top border */}
-      <div className="h-2 bg-gradient-to-r from-amber-700 via-amber-600 to-amber-700" />
-
       {/* Header */}
       <header className="border-b border-stone-200">
-        <div className="container mx-auto max-w-5xl px-8 py-6 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-full border-2 border-amber-700 flex items-center justify-center bg-stone-100">
-              <svg className="w-6 h-6 text-amber-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-              </svg>
-            </div>
-            <div>
-              <span className="text-xl font-serif font-semibold text-stone-800 tracking-wide">Feed Distortion Index</span>
-              <p className="text-xs text-stone-500 tracking-widest uppercase">An Instrument of Self-Knowledge</p>
-            </div>
-          </div>
+        <div className="container mx-auto max-w-3xl px-6 py-6 flex items-center justify-between">
+          <span className="text-lg font-medium text-stone-800">Feed Distortion Index</span>
           <a
             href="https://willbeaumaster.com"
-            className="text-sm text-stone-500 hover:text-amber-700 transition-colors font-serif italic"
+            className="text-sm text-stone-500 hover:text-stone-800 transition-colors"
           >
             Will Beaumaster
           </a>
         </div>
       </header>
 
-      {/* Hero */}
-      <section className="py-20 md:py-28 px-8 bg-gradient-to-b from-stone-100 to-stone-50">
-        <div className="container mx-auto max-w-3xl text-center">
-          <p className="text-amber-700 text-sm tracking-widest uppercase mb-6 font-medium">Attention & Cognition</p>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif text-stone-800 mb-8 leading-tight">
-            Know Thyself Through
-            <span className="block italic text-amber-800">What Captures Thee</span>
+      {/* Intro */}
+      <section className="py-12 md:py-16 px-6">
+        <div className="container mx-auto max-w-2xl">
+          <h1 className="text-3xl md:text-4xl font-medium text-stone-800 mb-6 leading-tight">
+            What does your Instagram feed say about you?
           </h1>
-          <p className="text-lg md:text-xl text-stone-600 max-w-2xl mx-auto leading-relaxed font-serif">
-            Record your passage through the infinite scroll. This instrument reveals
-            which images arrest your gaze and measures them against the classical dimensions of cognitive capture.
-          </p>
-          <div className="mt-8 flex justify-center">
-            <div className="w-24 h-px bg-gradient-to-r from-transparent via-amber-600 to-transparent" />
+
+          <div className="space-y-4 text-stone-600 leading-relaxed">
+            <p>
+              I built this because I wanted to know what I actually stop to look at when I scroll.
+              Not what I think I look at, but what actually catches my attention. Turns out those
+              are pretty different things.
+            </p>
+            <p>
+              The idea is simple: record yourself scrolling for 30-60 seconds, upload it here,
+              and the tool figures out which posts you paused on. Then it scores each one on
+              things like how polished the content is, how emotionally intense, whether it's
+              the kind of stuff that makes you feel like you're missing out on something.
+            </p>
+            <p>
+              I don't know if this means anything profound. But I do think there's something
+              interesting about seeing your attention patterns laid out like that. It felt
+              different than I expected.
+            </p>
           </div>
         </div>
       </section>
 
       {/* App embed */}
-      <section className="px-8 pb-20">
-        <div className="container mx-auto max-w-4xl">
-          <div className="rounded-sm overflow-hidden shadow-xl border-4 border-double border-stone-300 bg-white">
-            <div className="bg-stone-100 border-b border-stone-200 px-4 py-2 flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-amber-600" />
-              <span className="text-xs text-stone-500 font-serif tracking-wide">The Apparatus</span>
-            </div>
+      <section className="px-6 pb-16">
+        <div className="container mx-auto max-w-3xl">
+          <div className="rounded-lg overflow-hidden border border-stone-200 shadow-sm">
             <iframe
               src={appUrl}
               className="w-full bg-white"
-              style={{ height: "900px" }}
+              style={{ height: "850px" }}
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope"
             />
           </div>
@@ -68,105 +61,65 @@ export function FeedDistortionPost() {
       </section>
 
       {/* How it works */}
-      <section className="py-20 px-8 bg-stone-100 border-y border-stone-200">
-        <div className="container mx-auto max-w-4xl">
-          <div className="text-center mb-16">
-            <p className="text-amber-700 text-xs tracking-widest uppercase mb-3">Methodology</p>
-            <h2 className="text-3xl font-serif text-stone-800">The Threefold Process</h2>
-          </div>
+      <section className="py-12 px-6 bg-stone-100 border-t border-stone-200">
+        <div className="container mx-auto max-w-2xl">
+          <h2 className="text-xl font-medium text-stone-800 mb-6">How it works</h2>
 
-          <div className="grid md:grid-cols-3 gap-12">
-            <div className="text-center">
-              <div className="w-16 h-16 rounded-full border-2 border-amber-700/30 flex items-center justify-center mx-auto mb-6 bg-stone-50">
-                <span className="text-2xl font-serif text-amber-800">I</span>
-              </div>
-              <h3 className="text-lg font-serif text-stone-800 mb-3">Capture the Journey</h3>
-              <p className="text-sm text-stone-600 leading-relaxed">
-                Record thy passage through the feeds of Instagram, TikTok, or LinkedIn for thirty to sixty seconds.
-              </p>
-            </div>
-
-            <div className="text-center">
-              <div className="w-16 h-16 rounded-full border-2 border-amber-700/30 flex items-center justify-center mx-auto mb-6 bg-stone-50">
-                <span className="text-2xl font-serif text-amber-800">II</span>
-              </div>
-              <h3 className="text-lg font-serif text-stone-800 mb-3">Discern the Pauses</h3>
-              <p className="text-sm text-stone-600 leading-relaxed">
-                Phase correlation algorithms identify each moment thy scroll ceased—where attention was arrested.
-              </p>
-            </div>
-
-            <div className="text-center">
-              <div className="w-16 h-16 rounded-full border-2 border-amber-700/30 flex items-center justify-center mx-auto mb-6 bg-stone-50">
-                <span className="text-2xl font-serif text-amber-800">III</span>
-              </div>
-              <h3 className="text-lg font-serif text-stone-800 mb-3">Measure the Soul</h3>
-              <p className="text-sm text-stone-600 leading-relaxed">
-                A vision model scores each captured image across dimensions of beauty, intensity, and aspiration.
-              </p>
-            </div>
+          <div className="space-y-4 text-stone-600 leading-relaxed">
+            <p>
+              <strong className="text-stone-700">Finding the pauses.</strong> The tool watches your
+              screen recording frame by frame. When the scroll stops for more than half a second,
+              that's a pause—you stopped to look at something. It captures that post.
+            </p>
+            <p>
+              <strong className="text-stone-700">Scoring the content.</strong> Each captured post
+              gets scored on five things: appearance focus (beauty, fashion, body stuff), how
+              polished it looks, emotional intensity, negativity, and aspirational content
+              (luxury, travel, success—the stuff that can make you feel like you're behind).
+            </p>
+            <p>
+              <strong className="text-stone-700">The final number.</strong> Your distortion score
+              combines all of this. Higher means your feed is more heavily weighted toward
+              engagement-bait. Lower means it's more neutral. Neither is necessarily good or bad—it's
+              just data about what's capturing your attention.
+            </p>
           </div>
         </div>
       </section>
 
-      {/* Dimensions */}
-      <section className="py-20 px-8">
-        <div className="container mx-auto max-w-4xl">
-          <div className="text-center mb-16">
-            <p className="text-amber-700 text-xs tracking-widest uppercase mb-3">The Five Dimensions</p>
-            <h2 className="text-3xl font-serif text-stone-800">Categories of Cognitive Capture</h2>
-          </div>
+      {/* Caveats */}
+      <section className="py-12 px-6">
+        <div className="container mx-auto max-w-2xl">
+          <h2 className="text-xl font-medium text-stone-800 mb-6">A few caveats</h2>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[
-              { name: "Appearance", latin: "Forma", desc: "The pull of beauty, fashion, and corporeal presentation" },
-              { name: "Idealization", latin: "Perfectio", desc: "The polish of curation versus the rawness of truth" },
-              { name: "Arousal", latin: "Excitatio", desc: "The intensity of emotional activation and stimulation" },
-              { name: "Negativity", latin: "Tristitia", desc: "The shadow of anger, sorrow, and discontent" },
-              { name: "Aspiration", latin: "Desiderium", desc: "The longing for status, luxury, and achievement" },
-            ].map((dim) => (
-              <div
-                key={dim.name}
-                className="p-6 bg-stone-50 border border-stone-200 rounded-sm hover:border-amber-600/30 transition-colors"
-              >
-                <p className="text-xs text-amber-700 tracking-widest uppercase mb-1">{dim.latin}</p>
-                <h3 className="text-lg font-serif text-stone-800 mb-2">{dim.name}</h3>
-                <p className="text-sm text-stone-500 leading-relaxed">{dim.desc}</p>
-              </div>
-            ))}
+          <div className="space-y-4 text-stone-600 leading-relaxed">
+            <p>
+              This is a toy, not science. All the thresholds are rough guesses. The scoring
+              dimensions come from psychology research on social media effects, but I'm not
+              claiming this is rigorous. I built it because I was curious, and I thought
+              other people might be too.
+            </p>
+            <p>
+              I could be wrong about what any of this means. But I do think it's worth
+              thinking about what we consume without choosing to—what catches our eye
+              before we even decide if we want to see it. That felt worth exploring.
+            </p>
+            <p>
+              If you have thoughts about this, I'd actually love to hear them.
+              What surprised you about your results? What didn't?
+            </p>
           </div>
-        </div>
-      </section>
-
-      {/* Quote */}
-      <section className="py-16 px-8 bg-amber-50 border-y border-amber-100">
-        <div className="container mx-auto max-w-2xl text-center">
-          <blockquote className="text-xl md:text-2xl font-serif italic text-stone-700 leading-relaxed">
-            "The unexamined feed is not worth scrolling."
-          </blockquote>
-          <p className="mt-4 text-sm text-stone-500 tracking-wide">— Adapted from Socrates</p>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="py-12 px-8 bg-stone-100 border-t border-stone-200">
-        <div className="container mx-auto max-w-4xl text-center">
-          <div className="w-12 h-12 rounded-full border border-stone-300 flex items-center justify-center mx-auto mb-6 bg-stone-50">
-            <svg className="w-5 h-5 text-amber-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-            </svg>
-          </div>
-          <p className="text-sm text-stone-500 font-serif">
-            An instrument of curiosity, not of science.
-          </p>
-          <p className="text-xs text-stone-400 mt-2 tracking-wide">
-            Crafted by Will Beaumaster · MMXXVI
+      <footer className="py-8 px-6 border-t border-stone-200">
+        <div className="container mx-auto max-w-2xl text-center">
+          <p className="text-sm text-stone-500">
+            Built by Will Beaumaster · 2026
           </p>
         </div>
       </footer>
-
-      {/* Decorative bottom border */}
-      <div className="h-2 bg-gradient-to-r from-amber-700 via-amber-600 to-amber-700" />
     </div>
   )
 }

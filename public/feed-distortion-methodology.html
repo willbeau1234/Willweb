@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feed Distortion Index: The Math Behind It</title>
+    <style>
+        @media print {
+            body { font-size: 11pt; }
+            .no-print { display: none; }
+        }
+
+        body {
+            font-family: Georgia, 'Times New Roman', serif;
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            line-height: 1.7;
+            color: #1a1a1a;
+            background: white;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            font-weight: normal;
+            margin-bottom: 0.5rem;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 0.5rem;
+        }
+
+        .meta {
+            color: #666;
+            margin-bottom: 2rem;
+        }
+
+        h2 {
+            font-size: 1.2rem;
+            font-weight: normal;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        p {
+            margin-bottom: 1rem;
+        }
+
+        .formula {
+            background: #f8f8f8;
+            padding: 12px 16px;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+            border-left: 3px solid #ddd;
+            overflow-x: auto;
+        }
+
+        ul {
+            margin-bottom: 1rem;
+            padding-left: 1.5rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        strong {
+            font-weight: 600;
+        }
+
+        .section-intro {
+            font-style: italic;
+            color: #555;
+        }
+
+        .print-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background: #292524;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: -apple-system, sans-serif;
+            font-size: 14px;
+        }
+
+        .print-btn:hover {
+            background: #44403c;
+        }
+    </style>
+</head>
+<body>
+    <button class="print-btn no-print" onclick="window.print()">Save as PDF</button>
+
+    <h1>Feed Distortion Index: The Math Behind It</h1>
+    <p class="meta">Will Beaumaster · June 2026</p>
+
+    <h2>What This Is</h2>
+    <p>
+        I built a tool that watches you scroll Instagram (or TikTok, or whatever) and tells you what you actually stop to look at. Not what you think you look at—what actually catches your attention. This document explains how it works under the hood.
+    </p>
+    <p>
+        Fair warning: this is a toy, not science. All the thresholds are rough guesses. The scoring dimensions come from psychology research on social media effects, but I'm not claiming any of this is rigorous. I built it because I was curious, and I thought other people might be too.
+    </p>
+    <p>
+        I could be wrong about what any of this means. But here's how it works.
+    </p>
+
+    <h2>1. Detecting Pauses</h2>
+    <p>
+        The first step is figuring out when you stopped scrolling. This is harder than it sounds because videos autoplay—you can't just look for frames that don't change.
+    </p>
+    <p>
+        I use <strong>phase correlation</strong>, which tracks the actual movement between frames. When the scroll stops for more than half a second, that's a pause—you stopped to look at something.
+    </p>
+    <p>
+        Technically, for each pair of consecutive frames, I compute:
+    </p>
+    <div class="formula">
+        (dx, dy), r = phaseCorrelate(Frame_t, Frame_t+1)
+    </div>
+    <p>
+        where dy is the vertical shift and r is the correlation peak. If |dy| > 3 pixels, you're scrolling. Otherwise, you're dwelling.
+    </p>
+    <p>
+        The tool samples at 5 fps (every 6th frame at 30fps video) to keep things fast without missing short pauses.
+    </p>
+
+    <h2>2. Scoring Each Post</h2>
+    <p>
+        Every post you pause on gets sent to a vision model (Claude Haiku) and scored on five dimensions. These come from psychology research on what makes social media content psychologically "sticky":
+    </p>
+    <ul>
+        <li><strong>Appearance</strong> (0–1): Focus on beauty, fashion, body image</li>
+        <li><strong>Idealization</strong> (0–1): How polished vs. raw the content looks</li>
+        <li><strong>Arousal</strong> (0–1): Emotional intensity</li>
+        <li><strong>Negativity</strong> (0–1): Negative emotional tone</li>
+        <li><strong>Aspiration</strong> (0–1): Luxury, success, lifestyle envy stuff</li>
+    </ul>
+    <p>
+        Each post gets a score for all five. Nothing special here—just asking a vision model to rate things.
+    </p>
+
+    <h2>3. Computing Per-Post Intensity</h2>
+    <p>
+        Each post's overall "intensity" is a weighted power mean of its dimension scores. The idea is that a post that's high on multiple dimensions is more intense than one that's high on just one.
+    </p>
+    <p>
+        For post i with dimension scores s:
+    </p>
+    <div class="formula">
+        I_i = ( Σ w_d × s_d^p )^(1/p)
+    </div>
+    <p>
+        where w_d are the dimension weights (appearance: 0.30, idealization: 0.25, arousal: 0.20, negativity: 0.15, aspiration: 0.10) and p = 2 is the power mean exponent. Higher p means posts that are high on multiple dimensions get even higher scores.
+    </p>
+
+    <h2>4. Attention Weighting</h2>
+    <p>
+        Not all pauses are equal. A 5-second stare means more than a half-second glance. I weight each post by how much attention you gave it:
+    </p>
+    <div class="formula">
+        ω_i = log(1 + t_i/τ) × (1 + γ × a_i) × (1 + δ × v_i)
+    </div>
+    <p>where:</p>
+    <ul>
+        <li><strong>t_i</strong> is dwell time in seconds</li>
+        <li><strong>τ = 1.5</strong> is a scaling factor (diminishing returns on long stares)</li>
+        <li><strong>a_i</strong> is the arousal score (high-arousal content gets a boost because it's designed to capture attention)</li>
+        <li><strong>γ = 1.0</strong> is the arousal boost multiplier</li>
+        <li><strong>v_i</strong> is 1 if the content was video/animation, 0 otherwise</li>
+        <li><strong>δ = 0.3</strong> is the video boost multiplier</li>
+    </ul>
+    <p>
+        The weights get normalized so they sum to 1.
+    </p>
+
+    <h2>5. The Final Score: Peak-End</h2>
+    <p>
+        Here's where it gets interesting. I don't just take the average of all the posts you looked at. I use a version of the <strong>peak-end rule</strong> from psychology—the idea that we remember experiences primarily by their most intense moment (peak) and how they ended.
+    </p>
+    <p>
+        The overall distortion score is:
+    </p>
+    <div class="formula">
+        Score = 100 × ( α × D̄ + β × D_max + (1 - α - β) × D_end )
+    </div>
+    <p>where:</p>
+    <ul>
+        <li><strong>D̄</strong> = attention-weighted mean intensity</li>
+        <li><strong>D_max</strong> = peak intensity (the most intense post you paused on)</li>
+        <li><strong>D_end</strong> = mean intensity of the last 3 posts</li>
+        <li><strong>α = 0.5</strong>, <strong>β = 0.3</strong> (so ending gets 20% weight)</li>
+    </ul>
+    <p>
+        This means your score isn't just about what you saw on average—it's also about the most intense thing you saw and how your session ended.
+    </p>
+
+    <h2>6. The Gap: Served vs. Stopped</h2>
+    <p>
+        This is the part I find most interesting. For each dimension, I compute:
+    </p>
+    <ul>
+        <li><strong>Served:</strong> The unweighted average score across all posts you paused on. This is what the algorithm showed you.</li>
+        <li><strong>Stopped on:</strong> The attention-weighted average. This is what actually captured your attention.</li>
+    </ul>
+    <p>
+        The gap between these tells you something about your engagement patterns. If your "stopped on" appearance score is higher than "served," you're dwelling more on appearance-focused content than average. That's not necessarily bad—it's just data.
+    </p>
+
+    <h2>Why These Numbers?</h2>
+    <p>
+        All the specific values (weights, thresholds, exponents) are tasteful guesses. I tuned them on my own scroll recordings until the output felt reasonable. They're not calibrated on any dataset, and I make no claims about their validity.
+    </p>
+    <p>
+        If you want to mess with them, all the constants are in config.py. The whole thing is open source.
+    </p>
+
+    <h2>What This Doesn't Tell You</h2>
+    <p>A few things I want to be explicit about:</p>
+    <ul>
+        <li>This doesn't measure whether social media is "good" or "bad" for you</li>
+        <li>It doesn't account for context (maybe you paused on that fitness post because you found it annoying)</li>
+        <li>It's based on a single scroll session, which might not be representative</li>
+        <li>The dimension scores from the vision model are approximations, not ground truth</li>
+    </ul>
+    <p>
+        This is a curiosity tool. Treat it that way.
+    </p>
+
+    <h2>Data Privacy</h2>
+    <p>
+        Your video is processed on the server and deleted immediately after. I don't store your recordings, I don't look at what you scroll through, and I have no interest in your data. The tool runs, gives you results, and forgets you existed.
+    </p>
+
+    <h2>Contact</h2>
+    <p>
+        If you have thoughts about this—whether you think I'm onto something or totally wrong—I'd actually like to hear it. That's part of why I built this: to see what other people think.
+    </p>
+
+</body>
+</html>

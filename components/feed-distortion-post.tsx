@@ -66,11 +66,11 @@ export function FeedDistortionPost() {
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-medium text-stone-800">How it works</h2>
             <a
-              href="/feed-distortion-methodology.tex"
-              download
+              href="/feed-distortion-methodology.html"
+              target="_blank"
               className="text-sm text-stone-500 hover:text-stone-800 transition-colors underline"
             >
-              Download the full methodology (LaTeX)
+              Read the full methodology
             </a>
           </div>
 

@@ -211,6 +211,94 @@
         The gap between these tells you something about your engagement patterns. If your "stopped on" appearance score is higher than "served," you're dwelling more on appearance-focused content than average. That's not necessarily bad—it's just data.
     </p>
 
+    <h2>7. Bayesian Inference: Is Your Feed Distorted?</h2>
+    <p>
+        Here's where it gets more interesting. Instead of just computing a score, I also compute the <strong>posterior probability</strong> that your feed is "distorted" given what you stopped on. This uses Bayes' rule.
+    </p>
+    <p>
+        The idea: we have two hypotheses about your feed. H₁ says your feed is distorted (high engagement-bait content), H₀ says it's normal. We observe your attention patterns and ask: which hypothesis is more likely?
+    </p>
+    <div class="formula">
+        P(distorted | data) = P(data | distorted) × P(distorted) / P(data)
+    </div>
+    <p>
+        In practice, I compute the <strong>log likelihood ratio</strong> by modeling dimension scores as Beta distributions:
+    </p>
+    <div class="formula">
+        log LR = Σ [ log Beta(s; α_dist, β_dist) - log Beta(s; α_norm, β_norm) ]
+    </div>
+    <p>
+        The distorted hypothesis expects higher scores (Beta with α=3, β=2), while the normal hypothesis expects lower scores (Beta with α=2, β=3). This gives us a <strong>Bayes factor</strong>—how much more likely the distorted hypothesis is given your data.
+    </p>
+    <p>
+        I interpret the Bayes factor using the Kass & Raftery (1995) scale: BF > 150 is "very strong" evidence, 20-150 is "strong," 3-20 is "positive," and under 3 is basically inconclusive.
+    </p>
+
+    <h2>8. Signal Detection Theory: Arousal Sensitivity</h2>
+    <p>
+        This one comes from psychophysics. Signal detection theory was originally developed for radar operators—can you tell signal from noise?—but it applies here too.
+    </p>
+    <p>
+        I split your posts into "high arousal" (emotionally intense) and "low arousal" (calm), then compute <strong>d-prime</strong>:
+    </p>
+    <div class="formula">
+        d' = (μ_high - μ_low) / σ_pooled
+    </div>
+    <p>
+        where μ_high and μ_low are mean dwell times on high vs. low arousal content, and σ_pooled is the pooled standard deviation.
+    </p>
+    <p>
+        Higher d' means you're more "sensitive" to arousal—you consistently dwell longer on emotionally intense content. A d' near 0 means arousal doesn't affect your attention much.
+    </p>
+
+    <h2>9. Information Theory: Entropy and KL Divergence</h2>
+    <p>
+        Now we're getting into information theory. Two measures here:
+    </p>
+    <p>
+        <strong>Attention entropy</strong> tells you how spread out your attention is:
+    </p>
+    <div class="formula">
+        H = -Σ p_i × log(p_i)
+    </div>
+    <p>
+        where p_i is the normalized attention weight for each post. High entropy means you spread your attention evenly; low entropy means you focused intensely on a few posts.
+    </p>
+    <p>
+        <strong>KL divergence</strong> measures how far your attention distribution is from uniform:
+    </p>
+    <div class="formula">
+        D_KL(P || U) = Σ p_i × log(p_i / u_i)
+    </div>
+    <p>
+        Higher KL divergence means your attention was more concentrated—you really locked onto certain posts while barely glancing at others.
+    </p>
+    <p>
+        I also compute <strong>mutual information</strong> between dwell time and content intensity—how much does knowing the intensity of a post tell you about how long you'll look at it? This measures the coupling between what's shown and what captures your attention.
+    </p>
+
+    <h2>10. Weber-Fechner Law: Psychophysical Scaling</h2>
+    <p>
+        Finally, some classic psychophysics. The Weber-Fechner law says that perceived intensity is logarithmic—the difference between 1 and 2 feels bigger than the difference between 9 and 10.
+    </p>
+    <div class="formula">
+        perceived = k × log(stimulus / threshold)
+    </div>
+    <p>
+        I apply this to the raw dimension scores before computing the final intensity. It makes the system more sensitive to differences at low intensities, which matches how human perception actually works.
+    </p>
+
+    <h2>11. Beta-Binomial Posteriors</h2>
+    <p>
+        For each dimension, I also compute a <strong>Beta posterior distribution</strong>. This treats each score as a "success" (high) or "failure" (low) and updates a prior belief about the true underlying rate.
+    </p>
+    <div class="formula">
+        P(θ | data) ∝ Beta(α + successes, β + failures)
+    </div>
+    <p>
+        This gives us 95% credible intervals—a range where the true dimension score probably lies. It's more honest than just reporting a point estimate.
+    </p>
+
     <h2>Why These Numbers?</h2>
     <p>
         All the specific values (weights, thresholds, exponents) are tasteful guesses. I tuned them on my own scroll recordings until the output felt reasonable. They're not calibrated on any dataset, and I make no claims about their validity.

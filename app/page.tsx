@@ -7,6 +7,7 @@ import { ResumeSection } from "@/components/resume-section"
 import { AISolutionsSection } from "@/components/ai-solutions-section"
 import { ContactSection } from "@/components/contact-section"
 import { SpaceBackground } from "@/components/space-background"
+import { FeedDistortionPost } from "@/components/feed-distortion-post"
 
 export default function Home() {
   return (
@@ -15,6 +16,7 @@ export default function Home() {
       <Navigation />
       <main>
         <HeroSection />
+        <FeedDistortionPost />
         <ResumeSection />
         <ProjectsSection />
         <ResearchSection />

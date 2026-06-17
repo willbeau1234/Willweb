@@ -1,0 +1,24 @@
+# Environment variables (contains API keys)
+.env
+
+# Output directories
+output/
+uploads/
+debug_output/
+keyframes/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.Python
+venv/
+.venv/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/

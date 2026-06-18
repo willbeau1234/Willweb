@@ -76,6 +76,10 @@ export function FeedDistortionPost() {
               and the tool figures out which posts you paused on. Then it scores each one on
               things like how polished the content is, how emotionally intense, whether it's
               the kind of stuff that makes you feel like you're missing out on something.
+              Under the hood, it's using real computational methods from cognitive science and
+              psychophysics—Bayesian inference, signal detection theory, the same math researchers
+              use to study attention and perception. But you don't need to care about any of that
+              to use it.
             </p>
             <p className="text-sm bg-stone-100 p-4 rounded-lg">
               <strong className="text-stone-700">How to record:</strong> On iPhone, swipe down

@@ -77,6 +77,12 @@ export function FeedDistortionPost() {
               things like how polished the content is, how emotionally intense, whether it's
               the kind of stuff that makes you feel like you're missing out on something.
             </p>
+            <p className="text-sm bg-stone-100 p-4 rounded-lg">
+              <strong className="text-stone-700">How to record:</strong> On iPhone, swipe down
+              from the top-right corner and tap the screen record button (or add it in Settings → Control Center).
+              On Android, swipe down twice and tap Screen Record. Open Instagram, scroll naturally
+              for 30-60 seconds, stop recording, and upload the video here.
+            </p>
             <p>
               I don't know if this means anything profound. But I do think there's something
               interesting about seeing your attention patterns laid out like that. It felt

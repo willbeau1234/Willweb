@@ -191,7 +191,11 @@ export function FeedDistortionPost() {
             </p>
             <p>
               If you have thoughts about this, I'd actually love to hear them.
-              What surprised you about your results? What didn't?
+              What surprised you about your results? What didn't? Reach out at{" "}
+              <a href="mailto:Beaum045@umn.edu" className="text-stone-800 underline hover:text-stone-600">
+                Beaum045@umn.edu
+              </a>
+              —I respond to everything.
             </p>
           </div>
         </div>

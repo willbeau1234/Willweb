@@ -41,12 +41,20 @@ export function FeedDistortionPost() {
       <header className="border-b border-stone-200">
         <div className="container mx-auto max-w-3xl px-6 py-6 flex items-center justify-between">
           <span className="text-lg font-medium text-stone-800">Feed Distortion Index</span>
-          <a
-            href="https://willbeaumaster.com"
-            className="text-sm text-stone-500 hover:text-stone-800 transition-colors"
-          >
-            Will Beaumaster
-          </a>
+          <div className="flex items-center gap-4">
+            <a
+              href="#subscribe"
+              className="text-sm text-stone-600 hover:text-stone-800 transition-colors"
+            >
+              Subscribe
+            </a>
+            <a
+              href="https://willbeaumaster.com"
+              className="text-sm text-stone-500 hover:text-stone-800 transition-colors"
+            >
+              Will Beaumaster
+            </a>
+          </div>
         </div>
       </header>
 
@@ -154,7 +162,7 @@ export function FeedDistortionPost() {
       </section>
 
       {/* Newsletter signup */}
-      <section className="py-12 px-6 bg-stone-100 border-t border-stone-200">
+      <section id="subscribe" className="py-12 px-6 bg-stone-100 border-t border-stone-200">
         <div className="container mx-auto max-w-2xl">
           <h2 className="text-xl font-medium text-stone-800 mb-3">Get notified when I post something new</h2>
           <p className="text-stone-600 mb-6">

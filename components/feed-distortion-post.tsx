@@ -1,7 +1,39 @@
 "use client"
 
+import { useState } from "react"
+
 export function FeedDistortionPost() {
   const appUrl = "https://feed-distortion-app-production.up.railway.app"
+  const [email, setEmail] = useState("")
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle")
+  const [message, setMessage] = useState("")
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!email) return
+
+    setStatus("loading")
+    try {
+      const res = await fetch("/api/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      })
+      const data = await res.json()
+
+      if (res.ok) {
+        setStatus("success")
+        setMessage("You're in. Check your email.")
+        setEmail("")
+      } else {
+        setStatus("error")
+        setMessage(data.error || "Something went wrong")
+      }
+    } catch {
+      setStatus("error")
+      setMessage("Something went wrong")
+    }
+  }
 
   return (
     <div className="min-h-screen bg-stone-50">
@@ -118,6 +150,41 @@ export function FeedDistortionPost() {
               What surprised you about your results? What didn't?
             </p>
           </div>
+        </div>
+      </section>
+
+      {/* Newsletter signup */}
+      <section className="py-12 px-6 bg-stone-100 border-t border-stone-200">
+        <div className="container mx-auto max-w-2xl">
+          <h2 className="text-xl font-medium text-stone-800 mb-3">Get notified when I post something new</h2>
+          <p className="text-stone-600 mb-6">
+            I'll send you a quick summary so you can decide if it's worth your time. No spam.
+          </p>
+
+          {status === "success" ? (
+            <p className="text-stone-700 font-medium">{message}</p>
+          ) : (
+            <form onSubmit={handleSubscribe} className="flex gap-3">
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="your@email.com"
+                className="flex-1 px-4 py-3 rounded-lg border border-stone-300 bg-white text-stone-800 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-400"
+                disabled={status === "loading"}
+              />
+              <button
+                type="submit"
+                disabled={status === "loading" || !email}
+                className="px-6 py-3 bg-stone-800 text-white rounded-lg font-medium hover:bg-stone-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {status === "loading" ? "..." : "Subscribe"}
+              </button>
+            </form>
+          )}
+          {status === "error" && (
+            <p className="text-red-600 text-sm mt-2">{message}</p>
+          )}
         </div>
       </section>
 

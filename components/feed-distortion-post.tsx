@@ -136,8 +136,44 @@ export function FeedDistortionPost() {
         </div>
       </section>
 
-      {/* Caveats */}
+      {/* Why I built this */}
       <section className="py-12 px-6">
+        <div className="container mx-auto max-w-2xl">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-medium text-stone-800">Why I built this</h2>
+            <a
+              href="/my-motivation.pdf"
+              target="_blank"
+              className="text-sm text-stone-500 hover:text-stone-800 transition-colors underline"
+            >
+              Read the full essay
+            </a>
+          </div>
+
+          <div className="space-y-4 text-stone-600 leading-relaxed">
+            <p>
+              A series of personal events drew my attention to the mind. After taking a class
+              on modeling human behavior, I threw myself into computational neuroscience and
+              started reading everything I could get my hands on.
+            </p>
+            <p>
+              The field can sound boring until you remember what it actually gets used for.
+              In its more nefarious form, it crafts the algorithms and systems that exploit
+              every manner of our mind as efficiently as possible. This is what's called
+              the race to the brainstem—the hunt for the most effective way to hijack our
+              most basic instincts.
+            </p>
+            <p>
+              I intend to be on the other side of that race. Building toward a society where
+              technology helps us instead of preying on us. This tool is a small piece of that:
+              making visible what usually stays hidden.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Caveats */}
+      <section className="py-12 px-6 bg-stone-100 border-t border-stone-200">
         <div className="container mx-auto max-w-2xl">
           <h2 className="text-xl font-medium text-stone-800 mb-6">A few caveats</h2>
 
